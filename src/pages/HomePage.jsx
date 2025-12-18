@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getImages } from "../services/api";
+import styles from "../styles/HomePage.module.css";
 
 export default function HomePage() {
   const [images, setImages] = useState([]);
@@ -18,66 +19,80 @@ export default function HomePage() {
     fetchImages();
   }, []);
 
-  return (
-    <div className="home-container" style={styles.container}>
-      <h1 style={styles.title}>Where’s Waldo</h1>
-      <p style={styles.subtitle}>Choose an image to begin</p>
+  const startGame = () => {
+    if (images.length > 0) {
+      navigate(`/game/${images[0].id}`);
+    }
+  };
 
-      <div style={styles.grid}>
-        {images.map((img) => (
-          <div
-            key={img.id}
-            style={styles.card}
-            onClick={() => navigate(`/game/${img.id}`)}
+  return (
+    <div>
+      {/* NAVBAR */}
+      <nav className={styles.navbar}>
+        <div className={styles.logo}>🔍</div>
+        <div className={styles.navLinks}>
+          <span className={styles.navItem}>Home</span>
+          <span
+            className={styles.navItem}
+            onClick={() => navigate("/scores")}
           >
-            <img
-              src={img.url}
-              alt={img.name}
-              style={styles.image}
-            />
-            <h3 style={styles.imageName}>{img.name}</h3>
+            Leaderboard
+          </span>
+        </div>
+      </nav>
+
+      {/* HERO SECTION */}
+      <section className={styles.hero}>
+        <h1 className={styles.heroTitle}>Picture Hunt</h1>
+        <p className={styles.heroSubtitle}>
+          Unleash your inner detective! Find hidden characters in vibrant scenes against the clock.
+        </p>
+
+        <div className={styles.heroButtons}>
+          <button className={styles.primaryBtn} onClick={startGame}>
+            ▶ Start Game
+          </button>
+          <button
+            className={styles.secondaryBtn}
+            onClick={() => navigate("/scores")}
+          >
+            🏆 Leaderboard
+          </button>
+        </div>
+      </section>
+
+      {/* HOW TO PLAY */}
+      <section className={styles.howToPlay}>
+        <h2 className={styles.sectionTitle}>How To Play</h2>
+
+        <div className={styles.cardGrid}>
+          <div className={styles.infoCard}>
+            <h3>🎯 Find Characters</h3>
+            <p>
+              Spot hidden characters within detailed scenes. Keep your eyes sharp!
+            </p>
           </div>
-        ))}
-      </div>
+
+          <div className={styles.infoCard}>
+            <h3>🖱️ Tag Them Quick</h3>
+            <p>
+              Click on characters to tag them and beat the clock. Precision is key.
+            </p>
+          </div>
+
+          <div className={styles.infoCard}>
+            <h3>🏆 Compete & Win</h3>
+            <p>
+              Submit your best times and climb the global leaderboard.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* FOOTER */}
+      <footer className={styles.footer}>
+        © {new Date().getFullYear()} Picture Hunt. All rights reserved.
+      </footer>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    padding: "40px",
-    textAlign: "center",
-  },
-  title: {
-    fontSize: "48px",
-    marginBottom: "10px",
-  },
-  subtitle: {
-    fontSize: "20px",
-    marginBottom: "40px",
-    opacity: 0.7,
-  },
-  grid: {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-    gap: "25px",
-    maxWidth: "1000px",
-    margin: "0 auto",
-  },
-  card: {
-    padding: "20px",
-    borderRadius: "15px",
-    background: "#f5f5f5",
-    cursor: "pointer",
-    transition: "0.2s",
-  },
-  image: {
-    width: "100%",
-    borderRadius: "10px",
-  },
-  imageName: {
-    marginTop: "10px",
-    fontSize: "18px",
-  },
-};
-
