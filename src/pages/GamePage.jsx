@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import images from '../data/images';
 import styles from './GamePage.module.css';
@@ -10,6 +10,7 @@ export default function GamePage() {
   const [foundCharacters, setFoundCharacters] = useState([]);
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
+  const imageRef = useRef(null);
 
   // Timer effect
   useEffect(() => {
@@ -36,11 +37,37 @@ export default function GamePage() {
   };
 
   const handleImageClick = (e) => {
-    if (!isRunning) return;
+    if (!isRunning || !imageRef.current) return;
 
-    const rect = e.target.getBoundingClientRect();
-    const x = ((e.clientX - rect.left) / rect.width) * 100;
-    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    const img = imageRef.current;
+    const rect = img.getBoundingClientRect();
+    
+    // Calculate actual image position within container (for object-fit: contain)
+    const containerWidth = rect.width;
+    const containerHeight = rect.height;
+    const imgNaturalWidth = img.naturalWidth;
+    const imgNaturalHeight = img.naturalHeight;
+    
+    const scaleX = containerWidth / imgNaturalWidth;
+    const scaleY = containerHeight / imgNaturalHeight;
+    const scale = Math.min(scaleX, scaleY);
+    
+    const scaledWidth = imgNaturalWidth * scale;
+    const scaledHeight = imgNaturalHeight * scale;
+    
+    const offsetX = (containerWidth - scaledWidth) / 2;
+    const offsetY = (containerHeight - scaledHeight) / 2;
+    
+    // Calculate click position relative to actual image
+    const clickX = e.clientX - rect.left - offsetX;
+    const clickY = e.clientY - rect.top - offsetY;
+    
+    // Convert to percentage of original image
+    const x = (clickX / scaledWidth) * 100;
+    const y = (clickY / scaledHeight) * 100;
+    
+    // Ensure coordinates are within image bounds
+    if (x < 0 || x > 100 || y < 0 || y > 100) return;
 
     const found = gameData.characters.find(
       char => 
@@ -48,10 +75,12 @@ export default function GamePage() {
         Math.abs(char.x - x) < 8 && 
         Math.abs(char.y - y) < 8
     );
-
+    
     if (found) {
       setFoundCharacters([...foundCharacters, found]);
     }
+    
+    console.log(`Click: x ${x.toFixed(2)}, y ${y.toFixed(2)}`);
   };
 
   if (!gameData) return <div className={styles.error}>Game not found</div>;
@@ -93,6 +122,7 @@ export default function GamePage() {
       <main className={styles.gameArea}>
         <div className={styles.gameContainer}>
           <img 
+            ref={imageRef}
             src={gameData.url} 
             alt={gameData.title} 
             className={styles.gameImage}
@@ -100,16 +130,40 @@ export default function GamePage() {
           />
           
           {/* Character markers */}
-          {foundCharacters.map(char => (
-            <div 
-              key={char.id}
-              className={styles.marker}
-              style={{ left: `${char.x}%`, top: `${char.y}%` }}
-            >
-              <div className={styles.markerCircle}>✓</div>
-              <span className={styles.markerLabel}>{char.name}</span>
-            </div>
-          ))}
+          {foundCharacters.map(char => {
+            if (!imageRef.current) return null;
+            
+            const img = imageRef.current;
+            const rect = img.getBoundingClientRect();
+            const containerWidth = rect.width;
+            const containerHeight = rect.height;
+            const imgNaturalWidth = img.naturalWidth;
+            const imgNaturalHeight = img.naturalHeight;
+            
+            const scaleX = containerWidth / imgNaturalWidth;
+            const scaleY = containerHeight / imgNaturalHeight;
+            const scale = Math.min(scaleX, scaleY);
+            
+            const scaledWidth = imgNaturalWidth * scale;
+            const scaledHeight = imgNaturalHeight * scale;
+            
+            const offsetX = (containerWidth - scaledWidth) / 2;
+            const offsetY = (containerHeight - scaledHeight) / 2;
+            
+            const markerX = offsetX + (char.x / 100) * scaledWidth;
+            const markerY = offsetY + (char.y / 100) * scaledHeight;
+            
+            return (
+              <div 
+                key={char.id}
+                className={styles.marker}
+                style={{ left: `${markerX}px`, top: `${markerY}px` }}
+              >
+                <div className={styles.markerCircle}>✓</div>
+                <span className={styles.markerLabel}>{char.name}</span>
+              </div>
+            );
+          })}
         </div>
 
         {/* Character list sidebar */}
