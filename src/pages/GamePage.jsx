@@ -1,116 +1,140 @@
-import React, { useState, useEffect } from 'react';
-import styles from "../styles/GamePage.module.css";
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import images from '../data/images';
+import styles from './GamePage.module.css';
 
-const GamePage = () => {
-  const [foundItems, setFoundItems] = useState([]);
+export default function GamePage() {
+  const { imageId } = useParams();
+  const navigate = useNavigate();
+  const [gameData] = useState(() => images.find(img => img.id === parseInt(imageId)));
+  const [foundCharacters, setFoundCharacters] = useState([]);
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(true);
 
-  
-  const itemsToFind = [
-    { id: 1, name: 'Doraemon', x: 15, y: 28 },
-    { id: 2, name: 'Nobita', x: 25, y: 44 },
-    { id: 3, name: 'Shizuka', x: 50, y: 60 },
-  ];
-
+  // Timer effect
   useEffect(() => {
-    let interval;
-    if (isRunning) {
-      interval = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-      }, 1000);
-    }
+    if (!isRunning) return;
+    const interval = setInterval(() => setTime(t => t + 1), 1000);
     return () => clearInterval(interval);
   }, [isRunning]);
 
-  
+  // Check win condition
+  useEffect(() => {
+    if (foundCharacters.length === gameData?.characters.length) {
+      setIsRunning(false);
+      setTimeout(() => {
+        // Navigate to scores with time
+        navigate('/scores', { state: { time, characters: foundCharacters.length } });
+      }, 2000);
+    }
+  }, [foundCharacters, gameData, navigate, time]);
+
   const formatTime = (seconds) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  
   const handleImageClick = (e) => {
+    if (!isRunning) return;
+
     const rect = e.target.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
 
-    
-    const found = itemsToFind.find(
-      (item) => !foundItems.some((f) => f.id === item.id) &&
-                Math.abs(item.x - x) < 5 && Math.abs(item.y - y) < 5
+    const found = gameData.characters.find(
+      char => 
+        !foundCharacters.find(f => f.id === char.id) &&
+        Math.abs(char.x - x) < 8 && 
+        Math.abs(char.y - y) < 8
     );
 
     if (found) {
-      setFoundItems((prev) => [...prev, { ...found, x: `${found.x}%`, y: `${found.y}%` }]);
+      setFoundCharacters([...foundCharacters, found]);
     }
   };
 
-  const remaining = itemsToFind.length - foundItems.length;
+  if (!gameData) return <div className={styles.error}>Game not found</div>;
+
+  const remaining = gameData.characters.length - foundCharacters.length;
 
   return (
     <div className={styles.container}>
-      {/* Header Bar */}
+      {/* Header */}
       <header className={styles.header}>
-        <div className={styles.timerGroup}>
-          <span>⌛</span>
-          <span className={styles.label}>Time</span>
-          <span className={styles.timeValue}>{formatTime(time)}</span>
-        </div>
-
-        <div className={styles.foundSection}>
-          <span className={styles.label}>Found:</span>
-          <div className={styles.avatarStack}>
-            {foundItems.map((item) => (
-              <img key={item.id} src={`avatar${item.id}.png`} className={styles.avatar} alt={item.name} />
-            ))}
+        <div className={styles.headerLeft}>
+          <button className={styles.backBtn} onClick={() => navigate('/')}>← Home</button>
+          <div className={styles.timerGroup}>
+            <span className={styles.timerLabel}>⏱️</span>
+            <span className={styles.timerValue}>{formatTime(time)}</span>
           </div>
         </div>
 
-        <div className={styles.remainingBadge}>
-          Remaining: {remaining}
+        <h2 className={styles.gameTitle}>{gameData.title}</h2>
+
+        <div className={styles.headerRight}>
+          <div className={styles.foundSection}>
+            <span className={styles.foundLabel}>Found: {foundCharacters.length}/{gameData.characters.length}</span>
+            <div className={styles.characterList}>
+              {gameData.characters.map(char => (
+                <div 
+                  key={char.id} 
+                  className={`${styles.charItem} ${foundCharacters.find(f => f.id === char.id) ? styles.found : ''}`}
+                >
+                  {char.name}
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </header>
 
-      
-      <div className={styles.itemsList}>
-        <h3>Find:</h3>
-        <ul>
-          {itemsToFind.map((item) => (
-            <li key={item.id} className={foundItems.some((f) => f.id === item.id) ? styles.found : ''}>
-              {item.name}
-            </li>
+      {/* Game Canvas */}
+      <main className={styles.gameArea}>
+        <div className={styles.gameContainer}>
+          <img 
+            src={gameData.url} 
+            alt={gameData.title} 
+            className={styles.gameImage}
+            onClick={handleImageClick}
+          />
+          
+          {/* Character markers */}
+          {foundCharacters.map(char => (
+            <div 
+              key={char.id}
+              className={styles.marker}
+              style={{ left: `${char.x}%`, top: `${char.y}%` }}
+            >
+              <div className={styles.markerCircle}>✓</div>
+              <span className={styles.markerLabel}>{char.name}</span>
+            </div>
           ))}
-        </ul>
-      </div>
+        </div>
 
-      
-      <main className={styles.gameCanvas}>
-        <img 
-          src="path-to-your-doraemon-image.jpg" 
-          className={styles.gameImage} 
-          alt="Game Scene" 
-          onClick={handleImageClick}
-        />
-
-       
-        {foundItems.map((item) => (
-          <div 
-            key={item.id}
-            className={styles.checkMarker}
-            style={{ left: item.x, top: item.y }}
-          >
-            ✔
-          </div>
-        ))}
+        {/* Character list sidebar */}
+        <aside className={styles.sidebar}>
+          <h3>Find These:</h3>
+          <ul className={styles.charactersList}>
+            {gameData.characters.map(char => (
+              <li key={char.id} className={foundCharacters.find(f => f.id === char.id) ? styles.found : ''}>
+                {foundCharacters.find(f => f.id === char.id) ? '✓' : '○'} {char.name}
+              </li>
+            ))}
+          </ul>
+        </aside>
       </main>
 
-      <footer className={styles.footer}>
-        © 2025 . All rights reserved.
-      </footer>
+      {/* Status Modal */}
+      {!isRunning && foundCharacters.length === gameData.characters.length && (
+        <div className={styles.modal}>
+          <div className={styles.modalContent}>
+            <h2>🎉 Congratulations!</h2>
+            <p>You found all {gameData.characters.length} characters!</p>
+            <p className={styles.finalTime}>Time: {formatTime(time)}</p>
+          </div>
+        </div>
+      )}
     </div>
   );
-};
-
-export default GamePage;
+}
