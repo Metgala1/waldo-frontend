@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import images from '../data/images';
 import styles from './HomePage.module.css';
+import { useContext } from 'react';
+import { GameContext } from '../Context/GameContext';
 
 export default function HomePage() {
   const navigate = useNavigate();
+  const {images , loading} = useContext(GameContext);
 
   const startGame = (imageId) => {
     navigate(`/game/${imageId}`);
@@ -33,6 +35,8 @@ export default function HomePage() {
       <section className={styles.gamesSection}>
         <h2 className={styles.sectionTitle}>Available Games</h2>
         <div className={styles.gamesGrid}>
+          <p>Hey</p>
+          {loading ? (<p>Loading image...</p>) : null}
           {images.map((image) => (
             <div key={image.id} className={styles.gameCard}>
               <img src={image.url} alt={image.title} className={styles.cardImage} />
