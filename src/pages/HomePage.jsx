@@ -25,7 +25,7 @@ export default function HomePage() {
 
       {/* HERO SECTION */}
       <section className={styles.hero}>
-        <h2 className={styles.heroTitle}>Welcome to {images[0].title}</h2>
+        <h2 className={styles.heroTitle}>Welcome to {images[0]?.title}</h2>
         <p className={styles.heroSubtitle}>
           Find all the hidden characters in the scene before time runs out!
         </p>
