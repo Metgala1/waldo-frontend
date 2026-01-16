@@ -8,13 +8,16 @@ export const GameProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
+  const BASE_URL = import.meta.env.VITE_BACKEND_URL
+
   // 🔹 Fetch images from backend
   const fetchImages = async () => {
     try {
       setLoading(true);
       setError(null);
+    
 
-      const res = await axios.get("http://localhost:4040/images");
+      const res = await axios.get(`${BASE_URL}/images`);
 
       // matches: res.json({ image, message })
       setImages(res.data.image);
