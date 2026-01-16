@@ -6,6 +6,7 @@ import { GameContext } from '../Context/GameContext';
 export default function HomePage() {
   const navigate = useNavigate();
   const {images , loading} = useContext(GameContext);
+  console.log(images, loading);
 
   const startGame = (imageId) => {
     navigate(`/game/${imageId}`);
@@ -15,7 +16,6 @@ export default function HomePage() {
     <div className={styles.container}>
       {/* NAVBAR */}
       <nav className={styles.navbar}>
-        <div className={styles.logo}>🔍</div>
         <h1 className={styles.title}>Rick & Morty Hunt</h1>
         <div className={styles.navLinks}>
           <button className={styles.navItem} onClick={() => navigate('/')}>Home</button>
@@ -25,7 +25,7 @@ export default function HomePage() {
 
       {/* HERO SECTION */}
       <section className={styles.hero}>
-        <h2 className={styles.heroTitle}>Welcome to Rick & Morty Hunt</h2>
+        <h2 className={styles.heroTitle}>Welcome to {images[0].title}</h2>
         <p className={styles.heroSubtitle}>
           Find all the hidden characters in the scene before time runs out!
         </p>
@@ -35,23 +35,28 @@ export default function HomePage() {
       <section className={styles.gamesSection}>
         <h2 className={styles.sectionTitle}>Available Games</h2>
         <div className={styles.gamesGrid}>
-          <p>Hey</p>
-          {loading ? (<p>Loading image...</p>) : null}
-          {images.map((image) => (
-            <div key={image.id} className={styles.gameCard}>
-              <img src={image.url} alt={image.title} className={styles.cardImage} />
-              <div className={styles.cardContent}>
-                <h3>{image.title}</h3>
-                <p>Find {image.characters.length} characters</p>
-                <button 
-                  className={styles.playBtn}
-                  onClick={() => startGame(image.id)}
-                >
-                  ▶ Play Game
-                </button>
-              </div>
-            </div>
-          ))}
+          {images[0] && (
+  <div key={images[0].id} className={styles.gameCard}>
+    <img 
+      src={images[0].imageUrl} 
+      alt={images[0].title} 
+      className={styles.cardImage} 
+    />
+
+    <div className={styles.cardContent}>
+      <h3>{images[0].title}</h3>
+      <p>Find  characters</p>
+
+      <button 
+        className={styles.playBtn}
+        onClick={() => startGame(images[0].id)}
+      >
+        ▶ Play Game
+      </button>
+    </div>
+  </div>
+)}
+
         </div>
       </section>
 

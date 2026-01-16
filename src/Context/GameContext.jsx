@@ -14,7 +14,7 @@ export const GameProvider = ({ children }) => {
       setLoading(true);
       setError(null);
 
-      const res = await axios.get("http://localhost:4040/image");
+      const res = await axios.get("http://localhost:4040/images");
 
       // matches: res.json({ image, message })
       setImages(res.data.image);
