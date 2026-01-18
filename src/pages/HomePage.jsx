@@ -66,23 +66,26 @@ export default function HomePage() {
       <section className={styles.howToPlay}>
         <h2 className={styles.sectionTitle}>How to Play</h2>
         <div className={styles.stepsGrid}>
+         {/* 
+         commented out because just one scene is available right now 
           <div className={styles.step}>
             <div className={styles.stepNum}>1</div>
             <h3>Select a Game</h3>
             <p>Choose a scene and click start to begin</p>
           </div>
+          */}
           <div className={styles.step}>
-            <div className={styles.stepNum}>2</div>
+            <div className={styles.stepNum}></div>
             <h3>Find Characters</h3>
             <p>Click on characters to tag them in the scene</p>
           </div>
           <div className={styles.step}>
-            <div className={styles.stepNum}>3</div>
+            <div className={styles.stepNum}></div>
             <h3>Beat the Clock</h3>
             <p>Find all characters before time runs out</p>
           </div>
           <div className={styles.step}>
-            <div className={styles.stepNum}>4</div>
+            <div className={styles.stepNum}>3</div>
             <h3>Submit Score</h3>
             <p>Get on the leaderboard with your best time</p>
           </div>
