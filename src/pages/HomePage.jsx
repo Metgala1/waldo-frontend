@@ -35,21 +35,24 @@ export default function HomePage() {
       <section className={styles.gamesSection}>
         <h2 className={styles.sectionTitle}>Available Games</h2>
         <div className={styles.gamesGrid}>
-          {images[0] && (
-  <div key={images[0].id} className={styles.gameCard}>
+          {images && (
+  <div key={images.id} className={styles.gameCard}>
     <img 
-      src={images[0].imageUrl} 
-      alt={images[0].title} 
+      src={images.imageUrl} 
+      alt={images.title} 
       className={styles.cardImage} 
     />
 
     <div className={styles.cardContent}>
-      <h3>{images[0].title}</h3>
-      <p>Find  characters</p>
-
+      <h3>{images.title}</h3>
+      <p>Find characters: <br />{
+        images.Character?.map(char => (
+          <span key={char.id}>{char.name} ,</span>
+        ))}
+      </p>
       <button 
         className={styles.playBtn}
-        onClick={() => startGame(images[0].id)}
+        onClick={() => startGame(images.id)}
       >
         ▶ Play Game
       </button>
