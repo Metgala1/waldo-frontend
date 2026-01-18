@@ -75,12 +75,12 @@ export default function HomePage() {
           </div>
           */}
           <div className={styles.step}>
-            <div className={styles.stepNum}></div>
+            <div className={styles.stepNum}>1</div>
             <h3>Find Characters</h3>
             <p>Click on characters to tag them in the scene</p>
           </div>
           <div className={styles.step}>
-            <div className={styles.stepNum}></div>
+            <div className={styles.stepNum}>2</div>
             <h3>Beat the Clock</h3>
             <p>Find all characters before time runs out</p>
           </div>

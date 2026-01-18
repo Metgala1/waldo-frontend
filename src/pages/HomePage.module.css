@@ -221,9 +221,16 @@
 
   .gamesGrid {
     grid-template-columns: 1fr;
+  
   }
 
   .stepsGrid {
     grid-template-columns: 1fr;
+  }
+  .gamesSection {
+    padding: 1rem 1rem;
+  }
+  .hero{
+    padding: 2rem;
   }
 }
