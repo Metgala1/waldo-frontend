@@ -6,10 +6,9 @@ import { GameContext } from '../Context/GameContext';
 export default function HomePage() {
   const navigate = useNavigate();
   const {images , loading} = useContext(GameContext);
-  console.log(images, loading);
 
-  const startGame = (imageId) => {
-    navigate(`/game/${imageId}`);
+  const startGame = () => {
+    navigate("/game");
   };
 
   return (
@@ -52,7 +51,7 @@ export default function HomePage() {
       </p>
       <button 
         className={styles.playBtn}
-        onClick={() => startGame(images.id)}
+        onClick={() => startGame()}
       >
         ▶ Play Game
       </button>

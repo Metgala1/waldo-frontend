@@ -11,7 +11,7 @@ function App() {
       <Router>
       <Routes>
         <Route path="/" element={<HomePage />} />
-        <Route path="/game/:imageId" element={<GamePage />} />
+        <Route path="/game" element={<GamePage />} />
         <Route path="/scores" element={<ScoresPage />} />
       </Routes>
     </Router>
